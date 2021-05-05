@@ -6,7 +6,7 @@ import TECLogo from '../../assets/TECLogo.png'
 import TECName from '../../assets/TECName.svg'
 
 const HEADER_HEIGHT = 13 * GU
-const Header = () => {
+const Header = ({ openModal, setOpenModal, setId, setProvider }) => {
   const theme = useTheme()
   const { account } = useWallet()
   const { below } = useViewport()
@@ -68,7 +68,13 @@ const Header = () => {
             align-items: center;
           `}
         >
-          <AccountModule compact={layoutSmall} />
+          <AccountModule
+            compact={layoutSmall}
+            openModal={openModal}
+            setOpenModal={setOpenModal}
+            setId={setId}
+            setProvider={setProvider}
+          />
           {account && !layoutSmall && (
             <>
               <div

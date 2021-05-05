@@ -16,7 +16,7 @@ const PROVIDERS_INFO = getUseWalletProviders().map(provider => [
   getProviderFromUseWalletId(provider.id),
 ])
 
-const ScreenProviders = ({ onActivate }) => {
+const ScreenProviders = ({ openModal, setOpenModal, setId, setProvider }) => {
   const theme = useTheme()
 
   return (
@@ -53,7 +53,10 @@ const ScreenProviders = ({ onActivate }) => {
               key={id}
               id={id}
               provider={provider}
-              onActivate={onActivate}
+              openModal={openModal}
+              setOpenModal={setOpenModal}
+              setId={setId}
+              setProvider={setProvider}
             />
           ))}
         </div>
@@ -75,14 +78,20 @@ const ScreenProviders = ({ onActivate }) => {
     </div>
   )
 }
-ScreenProviders.propTypes = {
-  onActivate: PropTypes.func.isRequired,
-}
 
-const ProviderButton = ({ id, provider, onActivate }) => {
+const ProviderButton = ({
+  id,
+  provider,
+  openModal,
+  setOpenModal,
+  setId,
+  setProvider,
+}) => {
   const handleClick = useCallback(() => {
-    onActivate(id)
-  }, [onActivate, id])
+    setOpenModal(openModal => !openModal)
+    setId(id)
+    setProvider(provider)
+  }, [])
 
   return (
     <ButtonBase
@@ -118,7 +127,6 @@ const ProviderButton = ({ id, provider, onActivate }) => {
 }
 ProviderButton.propTypes = {
   id: PropTypes.string.isRequired,
-  onActivate: PropTypes.func.isRequired,
   provider: PropTypes.shape({
     image: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,

@@ -14,7 +14,6 @@ import { useAppState } from '../../providers/AppState'
 
 import { getUseWalletProviders } from '../../utils/web3-utils'
 import { useTheme } from 'styled-components'
-import { addEthereumChain } from '../../networks'
 
 const AnimatedDiv = animated.div
 
@@ -40,7 +39,13 @@ const SCREENS = [
   },
 ]
 
-const AccountModule = ({ compact }) => {
+const AccountModule = ({
+  compact,
+  openModal,
+  setOpenModal,
+  setId,
+  setProvider,
+}) => {
   const theme = useTheme()
   const buttonRef = useRef()
   const wallet = useWallet()
@@ -66,18 +71,6 @@ const AccountModule = ({ compact }) => {
   const handleCancelConnection = useCallback(() => {
     wallet.deactivate()
   }, [wallet])
-
-  const activate = useCallback(
-    async providerId => {
-      try {
-        await addEthereumChain()
-        await wallet.activate(providerId)
-      } catch (error) {
-        setActivationError(error)
-      }
-    },
-    [wallet]
-  )
 
   // Don’t animate the slider until the popover has opened
   useEffect(() => {
@@ -246,7 +239,14 @@ const AccountModule = ({ compact }) => {
                       />
                     )
                   }
-                  return <ScreenProviders onActivate={activate} />
+                  return (
+                    <ScreenProviders
+                      openModal={openModal}
+                      setOpenModal={setOpenModal}
+                      setId={setId}
+                      setProvider={setProvider}
+                    />
+                  )
                 })()}
               </AnimatedDiv>
             )}
