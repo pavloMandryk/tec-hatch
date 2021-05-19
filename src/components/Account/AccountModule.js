@@ -8,6 +8,7 @@ import AccountButton from './AccountButton'
 import ScreenProviders from './ScreenProviders'
 import ScreenConnected from './ScreenConnected'
 import ScreenConnecting from './ScreenConnecting'
+import ScreenCreateChain from './ScreenCreateChain'
 import HeaderPopover from '../Header/HeaderPopover'
 
 import { useAppState } from '../../providers/AppState'
@@ -38,6 +39,10 @@ const SCREENS = [
     id: 'error',
     height: 50 * GU,
   },
+  {
+    id: 'chainCreate',
+    height: 38 * GU,
+  },
 ]
 
 const AccountModule = ({ compact }) => {
@@ -48,6 +53,7 @@ const AccountModule = ({ compact }) => {
   const [animate, setAnimate] = useState(false)
   const [activatingDelayed, setActivatingDelayed] = useState(false)
   const [activationError, setActivationError] = useState(null)
+  const [creatingChain, setCreatingChain] = useState(false)
   const popoverFocusElement = useRef()
 
   const { account, activating } = wallet
@@ -70,7 +76,8 @@ const AccountModule = ({ compact }) => {
   const activate = useCallback(
     async providerId => {
       try {
-        await addEthereumChain()
+        await addEthereumChain(setCreatingChain)
+        setCreatingChain(false)
         await wallet.activate(providerId)
       } catch (error) {
         setActivationError(error)
@@ -117,6 +124,7 @@ const AccountModule = ({ compact }) => {
     const screenId = (() => {
       if (activationError) return 'error'
       if (activatingDelayed) return 'connecting'
+      if (creatingChain) return 'chainCreate'
       if (account) return 'connected'
       return 'providers'
     })()
@@ -127,14 +135,18 @@ const AccountModule = ({ compact }) => {
     previousScreenIndex.current = screenIndex
 
     return { direction, screenIndex }
-  }, [account, activationError, activatingDelayed])
+  }, [account, activationError, activatingDelayed, creatingChain])
 
   const screen = SCREENS[screenIndex]
   const screenId = screen.id
 
   const handlePopoverClose = useCallback(
     reject => {
-      if (screenId === 'connecting' || screenId === 'error') {
+      if (
+        screenId === 'connecting' ||
+        screenId === 'error' ||
+        screenId === 'chainCreate'
+      ) {
         // reject closing the popover
         return false
       }
@@ -229,6 +241,9 @@ const AccountModule = ({ compact }) => {
                         onCancel={handleCancelConnection}
                       />
                     )
+                  }
+                  if (screen.id === 'chainCreate') {
+                    return <ScreenCreateChain />
                   }
                   if (screen.id === 'connected') {
                     return (

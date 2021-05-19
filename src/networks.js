@@ -62,11 +62,12 @@ export const getNetwork = chainId => {
   return networks[getNetworkType(chainId)]
 }
 
-export const addEthereumChain = () => {
+export const addEthereumChain = setCreatingChain => {
   const { eip3085 } = getNetwork()
   if (!eip3085) {
     return Promise.resolve(null) // Network is not custom
   }
+  setCreatingChain(true)
   return window?.ethereum?.request({
     method: 'wallet_addEthereumChain',
     params: [eip3085],
