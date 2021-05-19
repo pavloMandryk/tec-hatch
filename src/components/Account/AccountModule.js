@@ -81,6 +81,7 @@ const AccountModule = ({ compact }) => {
         await wallet.activate(providerId)
       } catch (error) {
         setActivationError(error)
+        setCreatingChain(false)
       }
     },
     [wallet]
