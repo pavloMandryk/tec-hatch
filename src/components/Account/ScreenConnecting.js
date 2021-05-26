@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import { keyframes } from 'styled-components'
 import { GU, useTheme, textStyle, Link } from '@commonsswarm/ui'
 
+import xDaiLogo from './assets/xDai.svg'
+
 import {
   getProviderFromUseWalletId,
   getProviderString,
@@ -22,6 +24,7 @@ const spin = keyframes`
 const AccountModuleConnectingScreen = React.memo(function({
   onCancel,
   providerId,
+  networkId,
 }) {
   const theme = useTheme()
   const provider = getProviderFromUseWalletId(providerId)
@@ -77,7 +80,7 @@ const AccountModuleConnectingScreen = React.memo(function({
               right: 0;
               bottom: 0;
               background: 50% 50% / auto ${5 * GU}px no-repeat
-                url(${provider.image});
+                url(${networkId ? xDaiLogo : provider.image});
             `}
           />
         </div>
@@ -88,7 +91,7 @@ const AccountModuleConnectingScreen = React.memo(function({
             font-weight: 600;
           `}
         >
-          Connecting to {provider.name}
+          Connecting to {!providerId ? networkId : provider.name}
         </h1>
         <p
           css={`
@@ -96,8 +99,15 @@ const AccountModuleConnectingScreen = React.memo(function({
             color: ${theme.surfaceContentSecondary};
           `}
         >
-          Log into {getProviderString('your Ethereum provider', provider.id)}.
-          You may be temporarily redirected to a new screen.
+          {`${
+            networkId
+              ? `Adding ${networkId} network. Create the ${networkId} network in Metamask and switch to it.`
+              : `Log into ${getProviderString(
+                  'your Ethereum provider',
+                  provider.id
+                )}.`
+          }
+          You may be temporarily redirected to a new screen.`}
         </p>
       </div>
       <div
@@ -105,15 +115,16 @@ const AccountModuleConnectingScreen = React.memo(function({
           flex-grow: 0;
         `}
       >
-        <Link onClick={onCancel}>Cancel</Link>
+        {providerId && <Link onClick={onCancel}>Cancel</Link>}
       </div>
     </section>
   )
 })
 
 AccountModuleConnectingScreen.propTypes = {
+  networkId: PropTypes.string,
   providerId: PropTypes.string,
-  onCancel: PropTypes.func.isRequired,
+  onCancel: PropTypes.func,
 }
 
 export default AccountModuleConnectingScreen

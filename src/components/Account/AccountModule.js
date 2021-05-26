@@ -8,7 +8,6 @@ import AccountButton from './AccountButton'
 import ScreenProviders from './ScreenProviders'
 import ScreenConnected from './ScreenConnected'
 import ScreenConnecting from './ScreenConnecting'
-import ScreenCreateChain from './ScreenCreateChain'
 import HeaderPopover from '../Header/HeaderPopover'
 
 import { useAppState } from '../../providers/AppState'
@@ -53,7 +52,7 @@ const AccountModule = ({ compact }) => {
   const [animate, setAnimate] = useState(false)
   const [activatingDelayed, setActivatingDelayed] = useState(false)
   const [activationError, setActivationError] = useState(null)
-  const [creatingChain, setCreatingChain] = useState(false)
+  const [creatingChain, setCreatingChain] = useState(null)
   const popoverFocusElement = useRef()
 
   const { account, activating } = wallet
@@ -77,11 +76,11 @@ const AccountModule = ({ compact }) => {
     async providerId => {
       try {
         await addEthereumChain(setCreatingChain)
-        setCreatingChain(false)
+        setCreatingChain(null)
         await wallet.activate(providerId)
       } catch (error) {
         setActivationError(error)
-        setCreatingChain(false)
+        setCreatingChain(null)
       }
     },
     [wallet]
@@ -244,7 +243,7 @@ const AccountModule = ({ compact }) => {
                     )
                   }
                   if (screen.id === 'chainCreate') {
-                    return <ScreenCreateChain />
+                    return <ScreenConnecting networkId={creatingChain} />
                   }
                   if (screen.id === 'connected') {
                     return (

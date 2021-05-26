@@ -67,7 +67,7 @@ export const addEthereumChain = setCreatingChain => {
   if (!eip3085) {
     return Promise.resolve(null) // Network is not custom
   }
-  setCreatingChain(true)
+  setCreatingChain(eip3085.chainName)
   return window?.ethereum?.request({
     method: 'wallet_addEthereumChain',
     params: [eip3085],
